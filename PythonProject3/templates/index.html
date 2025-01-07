@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Network Speed Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .results {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .loading {
+            display: none;
+            color: #666;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .metric {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Network Speed Test</h1>
+    <button onclick="startTest()" id="testButton">Start Test</button>
+    <div id="loading" class="loading">Testing speed... (this may take 15-20 seconds)</div>
+    <div class="results">
+        <div class="metric">Download: <span id="download">-</span> Mbps</div>
+        <div class="metric">Upload: <span id="upload">-</span> Mbps</div>
+        <div class="metric">Ping: <span id="ping">-</span> ms</div>
+        <div>Last tested: <span id="timestamp">-</span></div>
+    </div>
+
+    <script>
+        async function startTest() {
+            const button = document.getElementById('testButton');
+            const loading = document.getElementById('loading');
+
+            button.disabled = true;
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/test-speed');
+                const data = await response.json();
+
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    document.getElementById('download').textContent = data.download;
+                    document.getElementById('upload').textContent = data.upload;
+                    document.getElementById('ping').textContent = data.ping;
+                    document.getElementById('timestamp').textContent = data.timestamp;
+                }
+            } catch (error) {
+                alert('Error running speed test: ' + error);
+            } finally {
+                button.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
